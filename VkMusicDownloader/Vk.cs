@@ -13,13 +13,9 @@ namespace VkMusicDownloader
     class Vk
     {
         private string FILE_NAME = "token";
-        private const int ID = 5650763;
-        private const string SCOPE = "audio,offline,";
-        private const string REDIRECT_URL = "https://oauth.vk.com/blank.html";
         private string Token;
-        private bool redirected = false;
-        private const string AUTH_URL = "https://oauth.vk.com/authorize";
         private const string API_URL = "https://api.vk.com/method/";
+        private const string VERSION = "5.57";
 
         /// <summary>
         /// Default constructor which reads token from file
@@ -36,6 +32,7 @@ namespace VkMusicDownloader
         public Vk(String Token)
         {
             this.Token = Token;
+            WriteTokenToFile();
         }
 
         /// <summary>
@@ -46,12 +43,27 @@ namespace VkMusicDownloader
         {
             try
             {
-                string Token = System.IO.File.ReadAllText(FILE_NAME);
+                string Token = File.ReadAllText(FILE_NAME);
                 return Token;
             }
             catch (FileNotFoundException)
             {
                 throw new VkAPIException("Token file is missing");
+            }
+        }
+
+        /// <summary>
+        /// Write OAuth token to file
+        /// </summary>
+        private void WriteTokenToFile()
+        {
+            try
+            {
+                File.WriteAllText(FILE_NAME,Token);
+            }
+            catch (Exception E)
+            {
+                throw new VkAPIException("Unable to write token to file:" + E.Message);
             }
         }
 
@@ -63,8 +75,8 @@ namespace VkMusicDownloader
         {
             try
             {
-                string RawResponse =  RESTHelper.GETRequest(API_URL + "users.get?");
-                User Account = JSONHelper.ReadUser(RawResponse);
+                string Response =  ExecuteMethod("users.get?");
+                User Account = JSONHelper.ReadUser(Response);
                 string Name = string.Format("{0} {1}",Account.FirstName,Account.LastName);
 
                 return Name;
@@ -75,5 +87,21 @@ namespace VkMusicDownloader
                 throw new VkAPIException("Unable to get account name:" + E.Message);
             }
         }
+
+        public string ExecuteMethod(string Method)
+        {
+            try
+            {
+                Char[] dels = { '[', ']' };
+                string RawResponse = RESTHelper.GETRequest(API_URL + Method + "access_token=" + Token + "&v=" + VERSION);
+                return RawResponse.Split(dels)[1];
+            }
+
+            catch (Exception E)
+            {
+                throw new VkAPIException("Unable to execute method:" + E.Message);
+            }
+        }
+
     }
 }

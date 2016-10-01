@@ -38,6 +38,20 @@ namespace VkMusicDownloader
                 string Token = Authorize();
                 VkApi = new Vk(Token);
             }
+
+            menu_vk_name.Header += " - " + VkApi.GetAccountName();
+        }
+
+        /// <summary>
+        /// Call login window and wait for it to return access token
+        /// </summary>
+        /// <returns>string - OAuth token</returns>
+        private string Authorize()
+        {
+            LoginWindow Login = new LoginWindow();
+            Login.ShowDialog();
+
+            return Login.Token;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace VkMusicDownloader
         public static User ReadUser(string JsonString)
         {
             DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(User));
-            User Result = (User) Serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(JsonString));
+            User Result = (User) Serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(JsonString)));
 
             return Result;
         }
