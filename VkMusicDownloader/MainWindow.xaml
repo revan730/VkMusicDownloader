@@ -1,7 +1,7 @@
 ﻿<Window x:Class="VkMusicDownloader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Vk Music Downloader" Height="400" Width="360">
+        Title="Vk Music Downloader" Height="400" Width="360" Initialized="Window_Initialized">
     <Grid>
         <Button Content="Загрузить" HorizontalAlignment="Left" Margin="10,330,0,0" VerticalAlignment="Top" Width="75"/>
         <Label x:Name="lbl_dest" Content="Путь загрузки:" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top"/>

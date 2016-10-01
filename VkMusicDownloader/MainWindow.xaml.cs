@@ -20,9 +20,24 @@ namespace VkMusicDownloader
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Vk VkApi;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Initialized(object sender, EventArgs e) // Init Vk API class (check if token exists and it's usable, load account name etc.)
+        {
+            try
+            {
+                VkApi = new Vk(); // Try to init object with token stored in file
+            }
+            catch (VkAPIException)
+            {
+                string Token = Authorize();
+                VkApi = new Vk(Token);
+            }
         }
     }
 }
