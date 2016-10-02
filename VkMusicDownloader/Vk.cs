@@ -66,6 +66,13 @@ namespace VkMusicDownloader
                 throw new VkAPIException("Unable to write token to file:" + E.Message);
             }
         }
+        /// <summary>
+        /// Remove token file 
+        /// </summary>
+        public void ResetToken()
+        {
+            File.Delete(FILE_NAME);
+        }
 
         /// <summary>
         /// Get current Vk account owner's name in form of "FirstName LastName" string
@@ -75,7 +82,7 @@ namespace VkMusicDownloader
         {
             try
             {
-                string Response =  ExecuteMethod("users.get?");
+                string Response =  ExecuteMethod("users.get");
                 User Account = JSONHelper.ReadUser(Response);
                 string Name = string.Format("{0} {1}",Account.FirstName,Account.LastName);
 
@@ -87,14 +94,65 @@ namespace VkMusicDownloader
                 throw new VkAPIException("Unable to get account name:" + E.Message);
             }
         }
+        /// <summary>
+        /// Get list of Album objects
+        /// </summary>
+        /// <returns>List of Album type</returns>
+        public List<Album> GetAlbums()
+        {
+            try
+            {
+                string Response = ExecuteMethod("audio.getAlbums");
+                List<Album> Albums = JSONHelper.ReadAlbums(Response);
 
-        public string ExecuteMethod(string Method)
+                return Albums;
+
+            }
+
+            catch (Exception E)
+            {
+                throw new VkAPIException("Unable to get albums:" + E.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get list of all Song objects in album
+        /// </summary>
+        /// <param name="AlbumId">Id of Vkontakte audio album</param>
+        /// <returns></returns>
+        public List<Song> GetSongs(int AlbumId)
+        {
+            try
+            {
+                string Response;
+
+                if (AlbumId == 0)
+                    Response = ExecuteMethod("audio.get");
+                else
+                    Response = ExecuteMethod("audio.get", "album_id=" + AlbumId);
+                List<Song> Songs = JSONHelper.ReadSongs(Response);
+
+                return Songs;
+            }
+
+            catch (Exception E)
+            {
+                throw new VkAPIException("Unable to get songs:" + E.Message);
+            }
+        }
+        /// <summary>
+        /// Wraps method call with api url and token parameter
+        /// </summary>
+        /// <param name="Method"> Vk API method name </param>
+        /// <param name="Params">Method parameters</param>
+        /// <returns>Vk API response string</returns>
+        private string ExecuteMethod(string Method, string Params="")
         {
             try
             {
                 Char[] dels = { '[', ']' };
-                string RawResponse = RESTHelper.GETRequest(API_URL + Method + "access_token=" + Token + "&v=" + VERSION);
-                return RawResponse.Split(dels)[1];
+                string RawResponse = RESTHelper.GETRequest(API_URL + Method + "?access_token=" + Token + "&v=" + VERSION + "&" + Params);
+                return RawResponse;
             }
 
             catch (Exception E)

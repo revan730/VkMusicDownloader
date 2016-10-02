@@ -7,13 +7,17 @@
         <Label x:Name="lbl_dest" Content="Путь загрузки:" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tb_dest" HorizontalAlignment="Left" Height="23" Margin="105,29,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="225"/>
         <Label x:Name="lbl_album" Content="Альбом:" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.132,-0.192"/>
-        <ComboBox x:Name="cb_albums" HorizontalAlignment="Left" Margin="105,57,0,0" VerticalAlignment="Top" Width="225"/>
-        <ListBox x:Name="lb_songs" HorizontalAlignment="Left" Height="226" Margin="10,87,0,0" VerticalAlignment="Top" Width="320">
+        <ComboBox x:Name="cb_albums" HorizontalAlignment="Left" Margin="105,57,0,0" VerticalAlignment="Top" Width="225" SelectionChanged="cb_albums_SelectionChanged"/>
+        <ListBox x:Name="lb_songs" HorizontalAlignment="Left" Height="226" Margin="10,87,0,0" VerticalAlignment="Top" Width="320" ItemsSource="{Binding ListItems}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Path=Item.Name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
         <Menu VerticalAlignment="Top" Height="24">
             <MenuItem Header="Аккаунт" x:Name="menu_vk_name">
-                <MenuItem Header="Сменить" x:Name="menu_vk_change" IsEnabled="False"></MenuItem>
-                <MenuItem Header="Выйти" x:Name="menu_vk_logout" IsEnabled="False"></MenuItem>
+                <MenuItem Header="Выйти" x:Name="menu_vk_logout" IsEnabled="True" Click="menu_vk_logout_Click"></MenuItem>
             </MenuItem>
         </Menu>
 
