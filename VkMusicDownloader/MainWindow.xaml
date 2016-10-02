@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Vk Music Downloader" Height="400" Width="360" Initialized="Window_Initialized">
     <Grid>
-        <Button Content="Загрузить" HorizontalAlignment="Left" Margin="10,330,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="btn_load" Content="Загрузить" HorizontalAlignment="Left" Margin="10,330,0,0" VerticalAlignment="Top" Width="75" Click="btn_load_Click"/>
         <Label x:Name="lbl_dest" Content="Путь загрузки:" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tb_dest" HorizontalAlignment="Left" Height="23" Margin="105,29,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="225"/>
         <Label x:Name="lbl_album" Content="Альбом:" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.132,-0.192"/>
@@ -20,6 +20,7 @@
                 <MenuItem Header="Выйти" x:Name="menu_vk_logout" IsEnabled="True" Click="menu_vk_logout_Click"></MenuItem>
             </MenuItem>
         </Menu>
+        <ProgressBar x:Name="pb_songs_loaded" HorizontalAlignment="Left" Height="20" Margin="105,330,0,0" VerticalAlignment="Top" Width="225" Visibility="Hidden"/>
 
     </Grid>
 </Window>

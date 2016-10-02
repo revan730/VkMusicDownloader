@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace VkMusicDownloader
 {
@@ -119,5 +120,55 @@ namespace VkMusicDownloader
             LoadAlbum(Item.Id);
         }
 
+        private void btn_load_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListItems.Where(item => item.IsChecked == true).Count() > 0)
+            {
+                if (Directory.Exists(tb_dest.Text))
+                {    
+                    LoadFiles();
+                }
+
+                else ShowError("Вы не ввели путь к директории загрузки,либо он не верный");
+            }
+        }
+
+        private async Task LoadFiles()
+        {
+            DeactivateInputs();
+            pb_songs_loaded.Visibility = Visibility.Visible;
+            var Delta = lb_songs.SelectedItems.Count / 100;
+            foreach (CheckedListItem<Song> S in ListItems.Where(item => item.IsChecked == true))
+            {
+                await WebLoadingHelper.AsyncDownload(tb_dest.Text + S.Item.Name, S.Item.Url);
+                pb_songs_loaded.Value += Delta;
+            }
+
+            pb_songs_loaded.Visibility = Visibility.Hidden;
+            ActivateInputs();
+        }
+
+        private void DeactivateInputs()
+        {
+            tb_dest.IsEnabled = false;
+            cb_albums.IsEnabled = false;
+            lb_songs.IsEnabled = false;
+            btn_load.IsEnabled = false;
+            menu_vk_logout.IsEnabled = false;
+        }
+
+        private void ActivateInputs()
+        {
+            tb_dest.IsEnabled = true;
+            cb_albums.IsEnabled = true;
+            lb_songs.IsEnabled = true;
+            btn_load.IsEnabled = true;
+            menu_vk_logout.IsEnabled = true;
+        }
+
+        private void ShowError(string Error)
+        {
+
+        }
     }
 }
