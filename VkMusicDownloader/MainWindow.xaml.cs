@@ -39,10 +39,10 @@ namespace VkMusicDownloader
         private void SetAlbums()
         {
             Albums = VkApi.GetAlbums();
-            cb_albums.Items.Add("Все");
+            cb_albums.Items.Add(new ComboBoxItemAlbum("Все", 0));
             foreach (Album a in Albums)
             {
-                cb_albums.Items.Add(a.Title);
+                cb_albums.Items.Add(new ComboBoxItemAlbum(a.Title, a.Id));
             }
         }
 
@@ -93,13 +93,10 @@ namespace VkMusicDownloader
         /// <summary>
         /// Load all songs from album
         /// </summary>
-        /// <param name="AlbumTitle">Album's title</param>
-        private void LoadAlbum(string AlbumTitle)
+        /// <param name="AlbumId">Album's Vkontakte identifier</param>
+        private void LoadAlbum(int AlbumId)
         {
-            var Id = 0;
-            if (AlbumTitle != "Все")
-                Id = Albums.Where(album => album.Title == AlbumTitle).First().Id;
-            var Songs = VkApi.GetSongs(Id);
+            var Songs = VkApi.GetSongs(AlbumId);
             ListItems = new ObservableCollection<CheckedListItem<Song>>();
             foreach (Song s in Songs)
             {
@@ -118,7 +115,8 @@ namespace VkMusicDownloader
 
         private void cb_albums_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LoadAlbum(e.AddedItems[0].ToString());
+            var Item = (ComboBoxItemAlbum) e.AddedItems[0];
+            LoadAlbum(Item.Id);
         }
 
     }

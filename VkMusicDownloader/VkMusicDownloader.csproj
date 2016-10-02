@@ -59,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Album.cs" />
+    <Compile Include="ComboBoxItemAlbum.cs" />
     <Compile Include="CheckedListItem.cs" />
     <Compile Include="JSONHelper.cs" />
     <Compile Include="LoginWindow.xaml.cs">
