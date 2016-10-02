@@ -120,32 +120,43 @@ namespace VkMusicDownloader
             LoadAlbum(Item.Id);
         }
 
-        private void btn_load_Click(object sender, RoutedEventArgs e)
+        private async void btn_load_Click(object sender, RoutedEventArgs e)
         {
-            if (ListItems.Where(item => item.IsChecked == true).Count() > 0)
+            if (ListItems != null && ListItems.Where(item => item.IsChecked == true).Count() > 0)
             {
                 if (Directory.Exists(tb_dest.Text))
-                {    
-                    LoadFiles();
+                {
+                    DeactivateInputs();
+                    pb_songs_loaded.Visibility = Visibility.Visible;
+
+                    await LoadFiles(tb_dest.Text, new Progress<int>(percent => pb_songs_loaded.Value = percent));
+
+                    pb_songs_loaded.Visibility = Visibility.Hidden;
+                    ActivateInputs();
                 }
 
                 else ShowError("Вы не ввели путь к директории загрузки,либо он не верный");
             }
+            else ShowError("Вы не выбрали песни для загрузки");
         }
 
-        private async Task LoadFiles()
+        private async Task<int> LoadFiles(string Destination ,IProgress<int> Progress)
         {
-            DeactivateInputs();
-            pb_songs_loaded.Visibility = Visibility.Visible;
-            var Delta = lb_songs.SelectedItems.Count / 100;
-            foreach (CheckedListItem<Song> S in ListItems.Where(item => item.IsChecked == true))
-            {
-                await WebLoadingHelper.AsyncDownload(tb_dest.Text + S.Item.Name, S.Item.Url);
-                pb_songs_loaded.Value += Delta;
-            }
+            var Total = ListItems.Where(item => item.IsChecked == true).Count();
+            var Downloaded = await Task.Run<int>(async () =>
+                {
+                    var Count = 0;
+                    foreach (CheckedListItem<Song> S in ListItems.Where(item => item.IsChecked == true))
+                    {
+                        await WebLoadingHelper.AsyncDownload(Destination + S.Item.Name, S.Item.Url);
+                        if (Progress != null)
+                            Progress.Report((Count * 100 / Total));
 
-            pb_songs_loaded.Visibility = Visibility.Hidden;
-            ActivateInputs();
+                        Count++;
+                    }
+                    return Count;
+                });
+            return Downloaded;
         }
 
         private void DeactivateInputs()
@@ -168,7 +179,7 @@ namespace VkMusicDownloader
 
         private void ShowError(string Error)
         {
-
+            MessageBox.Show(Error, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

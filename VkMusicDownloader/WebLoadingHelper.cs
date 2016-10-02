@@ -26,10 +26,12 @@ namespace VkMusicDownloader
 
                         using (var ResponseStream = await Response.Content.ReadAsStreamAsync())
                         {
-                            var FileStream = File.Create(FileName);
+                            var FileStream = File.Create(FileName + ".mp3");
                             var Reader = new StreamReader(ResponseStream);
                             ResponseStream.CopyTo(FileStream);
                             FileStream.Flush();
+                            FileStream.Close();
+                            Reader.Close();
                         }
                     }
                 }
