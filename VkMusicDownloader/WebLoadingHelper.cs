@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.IO;
+using System.Threading;
 
 namespace VkMusicDownloader
 {
@@ -13,7 +14,14 @@ namespace VkMusicDownloader
     /// </summary>
     class WebLoadingHelper
     {
-        public static async Task AsyncDownload(string FileName,string Url)
+        /// <summary>
+        /// Download mp3 file asynchronously
+        /// </summary>
+        /// <param name="FilePath">File name and path </param>
+        /// <param name="Url">File URL</param>
+        /// <param name="CToken">Cancellation token to check if task must be stopped</param>
+        /// <returns></returns>
+        public static async Task AsyncDownload(string FilePath,string Url,CancellationToken CToken)
         {
             try
             {
@@ -26,7 +34,8 @@ namespace VkMusicDownloader
 
                         using (var ResponseStream = await Response.Content.ReadAsStreamAsync())
                         {
-                            var FileStream = File.Create(FileName + ".mp3");
+                            CToken.ThrowIfCancellationRequested();
+                            var FileStream = File.Create(FilePath + ".mp3");
                             var Reader = new StreamReader(ResponseStream);
                             ResponseStream.CopyTo(FileStream);
                             FileStream.Flush();
@@ -39,6 +48,7 @@ namespace VkMusicDownloader
 
             catch (Exception E)
             {
+                if (E is HttpRequestException || E is IOException)
                 throw new VkAPIException("Unable to load file:" + E.Message);
             }
         }
